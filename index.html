@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MORVAN ARCADE</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #00ff88;
+            font-size: 3rem;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+        }
+
+        .subtitle {
+            color: #aaa;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+
+        /* Game Grid Layout */
+        .game-grid {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Game Icon/Card Style */
+        .game-card {
+            background: #1e1e1e;
+            border: 2px solid #333;
+            border-radius: 12px;
+            width: 200px;
+            padding: 25px 20px;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            border-color: #00ff88;
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.1);
+        }
+
+        .game-icon {
+            width: 90px;
+            height: 90px;
+            border-radius: 20px;
+            margin: 0 auto 15px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #121212;
+        }
+
+        /* Custom background gradients for the game icons */
+        .slope-icon { background: linear-gradient(135deg, #00ff88, #00b0ff); }
+        .paper-icon { background: linear-gradient(135deg, #ff416c, #ff4b2b); }
+        .flappy-icon { background: linear-gradient(135deg, #f1c40f, #e67e22); }
+        .cr-icon { background: linear-gradient(135deg, #2980b9, #8e44ad); }
+        .stack-icon { background: linear-gradient(135deg, #1abc9c, #2ecc71); }
+        .stickman-icon { background: linear-gradient(135deg, #e74c3c, #9b59b6); }
+        .dino-icon { background: linear-gradient(135deg, #7f8c8d, #bdc3c7); }
+        .jetpack-icon { background: linear-gradient(135deg, #d35400, #f39c12); }
+        .gd-icon { background: linear-gradient(135deg, #00ffcc, #0099ff); }
+        .cat-icon { background: linear-gradient(135deg, #ff9ff3, #feca57); }
+
+        .game-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 10px 0 5px 0;
+        }
+
+        /* The Popup Overlay */
+        .game-overlay {
+            display: none; 
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        /* The Expanded Game Window */
+        .game-window {
+            background: #222;
+            padding: 20px;
+            border-radius: 15px;
+            width: 85%;
+            max-width: 950px;
+            position: relative;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: -45px;
+            right: 0;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 2.5rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: #ff416c;
+        }
+
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+            border-radius: 8px;
+            background-color: #000;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>MORVAN ARCADE</h1>
+    <p class="subtitle">Select a game card below to launch into the action!</p>
+
+    <div class="game-grid">
+        
+        <div class="game-card" onclick="openGame('https://sz-games.github.io/slope/')">
+            <div class="game-icon slope-icon">S</div>
+            <div class="game-title">Slope</div>
+        </div>
+        
+        <div class="game-card" onclick="openGame('https://sz-games.github.io/Games/paperio2/index.html')">
+            <div class="game-icon paper-icon">P</div>
+            <div class="game-title">Paper.io 2</div>
+        </div>
+
+        <div class="game-card" onclick="openGame('https://mr-funkinguy.github.io/gfile/flappy/index.html')">
+            <div class="game-icon flappy-icon">F</div>
+            <div class="game-title">Flappy Bird</div>
+        </div>
+
+        <div class="game-card" onclick="openGame('https://sz-games.github.io/cr/')">
+            <div class="game-icon cr-icon">C</div>
+            <div class="game-title">Crossy Roads</div>
+        </div>
+
+        <div class="game-card" onclick="openGame('https://sz-games.github.io/games/stack')">
+            <div class="game-icon stack-icon">St</div>
+            <div class="game-title">Stack</div>
+        </div>
+
+        <div class="game-card" onclick="openGame('https://sz-games.github.io/Games5/stickman-hook')">
+            <div class="game-icon stickman-icon">SH</div>
+            <div class="game-title">Stickman Hook</div>
+        </div>
+
+        <div class="game-card" onclick="openGame('https://sz-games.github.io/games/dino')">
+            <div class="game-icon dino-icon">D</div>
+            <div class="game-title">Chrome Dino</div>
+        </div>
+
+        <div class="game-card" onclick="openGame('https://sz-games.github.io/Games5/jetpack-joyride/')">
+            <div class="game-icon jetpack-icon">JJ</div>
+            <div class="game-title">Jetpack Joyride</div>
+        </div>
+
+        <div class="game-card" onclick="openGame('https://sz-games.github.io/Games11/geometry-dash-lite')">
+            <div class="game-icon gd-icon">GD</div>
+            <div class="game-title">Geometry Dash</div>
+        </div>
+
+        <div class="game-card" onclick="openGame('https://sz-games.github.io/Games11/cat%20tennis')">
+            <div class="game-icon cat-icon">CT</div>
+            <div class="game-title">Cat Tennis</div>
+        </div>
+        
+    </div>
+
+    <div id="gameOverlay" class="game-overlay">
+        <div class="game-window">
+            <button class="close-btn" onclick="closeGame()">&times;</button>
+            <iframe id="gameFrame" src="" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <script>
+        function openGame(gameUrl) {
+            var overlay = document.getElementById('gameOverlay');
+            var iframe = document.getElementById('gameFrame');
+            
+            iframe.src = gameUrl; 
+            overlay.style.display = 'flex'; 
+        }
+
+        function closeGame() {
+            var overlay = document.getElementById('gameOverlay');
+            var iframe = document.getElementById('gameFrame');
+            
+            overlay.style.display = 'none'; 
+            iframe.src = ''; 
+        }
+    </script>
+
+</body>
+</html>
