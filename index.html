@@ -4,14 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MORVAN ARCADE</title>
+    <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
     <style>
         :root {
             --primary: #a855f7;
             --secondary: #6366f1;
             --neon-cyan: #06b6d4;
             --bg-base: #06020b;
-            --panel-bg: rgba(15, 10, 25, 0.65);
-            --border-glow: rgba(168, 85, 247, 0.25);
         }
 
         * {
@@ -30,7 +29,6 @@
             padding: 80px 20px;
         }
 
-        /* Ambient Matrix Canvas Background */
         #particleCanvas {
             position: fixed;
             top: 0;
@@ -43,18 +41,17 @@
 
         header {
             text-align: center;
-            margin-bottom: 60px;
+            margin-bottom: 25px;
             position: relative;
         }
 
-        /* Ultimate Neon Header */
         h1 {
             font-size: 4rem;
             font-weight: 900;
             letter-spacing: 8px;
             text-transform: uppercase;
             background: linear-gradient(to right, #ffffff 20%, var(--primary) 50%, var(--neon-cyan) 80%);
-            background-size: 200% auto;
+            background-size: 150% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: shine 4s linear infinite, titleGlow 3s ease-in-out infinite alternate;
@@ -75,111 +72,145 @@
             letter-spacing: 2px;
             margin-top: 10px;
             text-transform: uppercase;
-            opacity: 0.8;
+            opacity: 0;
         }
 
-        /* Advanced Grid Matrix */
+        .search-container {
+            max-width: 320px;
+            margin: 0 auto 40px auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 20px;
+            background: rgba(15, 11, 24, 0.6);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            border-radius: 50px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            font-weight: 600;
+            outline: none;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            text-align: center;
+            letter-spacing: 2px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .search-input:focus {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.4), inset 0 0 10px rgba(6, 182, 212, 0.1);
+            background: rgba(15, 11, 24, 0.85);
+        }
+
+        .search-input::placeholder {
+            color: #4b5563;
+            font-weight: 500;
+        }
+
+        .no-results {
+            display: none;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #94a3b8;
+            letter-spacing: 2px;
+            margin: 40px auto;
+            text-transform: uppercase;
+            filter: drop-shadow(0 0 8px rgba(244, 63, 94, 0.4));
+            animation: pulseText 2s infinite alternate;
+        }
+
+        @keyframes pulseText {
+            0% { color: #94a3b8; }
+            100% { color: #f43f5e; }
+        }
+
         .game-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-            gap: 30px;
-            max-width: 1300px;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 50px;
+            max-width: 1200px;
             margin: 0 auto;
             position: relative;
             z-index: 1;
         }
 
-        /* Next-Gen Cybernetic Game Cards */
         .game-card {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-glow);
-            border-radius: 20px;
-            padding: 35px 24px;
+            background: none;
+            border: none;
             cursor: pointer;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            justify-content: flex-start;
+            height: 200px;
         }
 
-        /* Interactive Ambient Corner Highlights */
-        .game-card::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 20px;
-            padding: 1px;
-            background: linear-gradient(to bottom right, transparent, transparent);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-            transition: all 0.4s;
-        }
-
-        .game-card:hover {
-            transform: translateY(-10px) scale(1.03);
-            border-color: rgba(6, 182, 212, 0.5);
-            background: rgba(22, 14, 38, 0.85);
-            box-shadow: 
-                0 20px 40px rgba(168, 85, 247, 0.2),
-                0 0 30px rgba(6, 182, 212, 0.15);
-        }
-
-        .game-card:hover::after {
-            background: linear-gradient(to bottom right, var(--neon-cyan), var(--primary));
-        }
-
-        /* Game Icon Structural Mechanics */
         .game-icon {
-            width: 90px;
-            height: 90px;
-            border-radius: 22px;
-            margin-bottom: 25px;
+            width: 120px;
+            height: 120px;
+            border-radius: 26px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.5rem;
-            font-weight: 900;
-            color: #ffffff;
             position: relative;
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6);
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.4s ease;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .game-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 26px;
+            pointer-events: none;
         }
 
         .game-card:hover .game-icon {
-            transform: scale(1.12) rotate(4deg);
+            transform: scale(1.5) translateY(-5px);
         }
 
-        /* Hyper Gradients */
-        .slope-icon { background: linear-gradient(135deg, #a855f7, #6366f1); box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); }
-        .paper-icon { background: linear-gradient(135deg, #ff416c, #ff4b2b); box-shadow: 0 0 20px rgba(255, 65, 108, 0.4); }
-        .flappy-icon { background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 0 20px rgba(245, 158, 11, 0.4); }
-        .cr-icon { background: linear-gradient(135deg, #3b82f6, #1d4ed8); box-shadow: 0 0 20px rgba(59, 130, 246, 0.4); }
-        .stack-icon { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); }
-        .stickman-icon { background: linear-gradient(135deg, #ec4899, #be185d); box-shadow: 0 0 20px rgba(236, 72, 153, 0.4); }
-        .dino-icon { background: linear-gradient(135deg, #64748b, #475569); box-shadow: 0 0 20px rgba(100, 116, 139, 0.4); }
-        .jetpack-icon { background: linear-gradient(135deg, #f97316, #ea580c); box-shadow: 0 0 20px rgba(249, 115, 22, 0.4); }
-        .gd-icon { background: linear-gradient(135deg, #06b6d4, #0891b2); box-shadow: 0 0 20px rgba(6, 182, 212, 0.4); }
-        .cat-icon { background: linear-gradient(135deg, #ec4899, #f43f5e); box-shadow: 0 0 20px rgba(244, 63, 94, 0.4); }
+        .slope-icon { filter: drop-shadow(0 10px 15px rgba(168, 85, 247, 0.5)); }
+        .paper-icon { filter: drop-shadow(0 10px 15px rgba(255, 65, 108, 0.5)); }
+        .flappy-icon { filter: drop-shadow(0 10px 15px rgba(245, 158, 11, 0.5)); }
+        .cr-icon { filter: drop-shadow(0 10px 15px rgba(59, 130, 246, 0.5)); }
+        .stack-icon { filter: drop-shadow(0 10px 15px rgba(16, 185, 129, 0.5)); }
+        .stickman-icon { filter: drop-shadow(0 10px 15px rgba(236, 72, 153, 0.5)); }
+        .dino-icon { filter: drop-shadow(0 10px 15px rgba(100, 116, 139, 0.5)); }
+        .jetpack-icon { filter: drop-shadow(0 10px 15px rgba(249, 115, 22, 0.5)); }
+        .gd-icon { filter: drop-shadow(0 10px 15px rgba(6, 182, 212, 0.5)); }
+        .cat-icon { filter: drop-shadow(0 10px 15px rgba(244, 63, 94, 0.5)); }
+        .ab-icon { filter: drop-shadow(0 10px 15px rgba(244, 63, 94, 0.5)); }
+        .fnaf-icon { filter: drop-shadow(0 10px 15px #41210780); }
+        .fnaf2-icon { filter: drop-shadow(0 10px 15px #22140380); }
+        .uno-icon { filter: drop-shadow(0 10px 15px hsla(0, 100%, 50%, 0.502)); }
 
         .game-title {
-            font-size: 1.3rem;
-            font-weight: 800;
+            font-size: 1.1rem;
+            font-weight: 700;
             letter-spacing: 0.5px;
-            color: #e2e8f0;
-            transition: color 0.3s;
+            color: #ffffff;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            position: absolute;
+            bottom: 5px;
+            text-align: center;
+            width: 100%;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+            z-index: 1;
         }
 
         .game-card:hover .game-title {
-            color: #ffffff;
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        /* Borderless Cinematic Immersive Overlay */
         .game-overlay {
             display: none; 
             position: fixed;
@@ -201,7 +232,6 @@
             opacity: 1;
         }
 
-        /* Sleek Gaming Display Window */
         .game-window {
             background: #0f0b18;
             padding: 5px;
@@ -237,13 +267,14 @@
             transform: scale(1.15) rotate(90deg);
         }
 
-        iframe {
+        iframe, #flashContainer {
             width: 100%;
             height: 700px;
             border: none;
             border-radius: 20px;
             background-color: #000;
             display: block;
+            overflow: hidden;
         }
     </style>
 </head>
@@ -253,72 +284,126 @@
 
     <header>
         <h1>MORVAN ARCADE</h1>
-        <p class="subtitle">Select A Game Card To Play</p>
+        <p class="subtitle">       .      </p>
+        <p class="subtitle">          .   </p>
+        <p class="subtitle">          .   </p>
+        <p class="subtitle">          .   </p>
     </header>
+
+    <div class="search-container">
+        <input type="text" id="gameSearchBar" class="search-input" placeholder="SEARCH GAMES..." oninput="filterGames()">
+    </div>
+
+    <div id="noResultsMessage" class="no-results">No games found matching that search</div>
 
     <div class="game-grid">
         
         <div class="game-card" onclick="openGame('https://sz-games.github.io/slope/')">
-            <div class="game-icon slope-icon">S</div>
+            <div class="game-icon slope-icon"><img src="https://raw.githubusercontent.com/sz-games/sz-games.github.io/main/cover/slope.webp" alt="Slope"></div>
             <div class="game-title">Slope</div>
         </div>
         
         <div class="game-card" onclick="openGame('https://sz-games.github.io/Games/paperio2/index.html')">
-            <div class="game-icon paper-icon">P</div>
+            <div class="game-icon paper-icon"><img src="https://raw.githubusercontent.com/sz-games/sz-games.github.io/main/cover/paperio.webp" alt="Paper.io 2"></div>
             <div class="game-title">Paper.io 2</div>
         </div>
 
         <div class="game-card" onclick="openGame('https://mr-funkinguy.github.io/gfile/flappy/index.html')">
-            <div class="game-icon flappy-icon">F</div>
+            <div class="game-icon flappy-icon"><img src="https://raw.githubusercontent.com/sz-games/sz-games.github.io/main/cover/FlappyBird.png" alt="Flappy Bird"></div>
             <div class="game-title">Flappy Bird</div>
         </div>
 
         <div class="game-card" onclick="openGame('https://sz-games.github.io/cr/')">
-            <div class="game-icon cr-icon">C</div>
-            <div class="game-title">Crossy Roads</div>
+            <div class="game-icon cr-icon"><img src="https://github.com/sz-games/storage3/blob/main/cr.jpeg?raw=true" alt="Crossy Road"></div>
+            <div class="game-title">Crossy Road</div>
         </div>
 
         <div class="game-card" onclick="openGame('https://sz-games.github.io/games/stack')">
-            <div class="game-icon stack-icon">St</div>
+            <div class="game-icon stack-icon"><img src="https://raw.githubusercontent.com/sz-games/sz-games.github.io/main/cover/Stack.webp" alt="Stack"></div>
             <div class="game-title">Stack</div>
         </div>
 
         <div class="game-card" onclick="openGame('https://sz-games.github.io/Games5/stickman-hook')">
-            <div class="game-icon stickman-icon">SH</div>
+            <div class="game-icon stickman-hook"><img src="https://raw.githubusercontent.com/sz-games/sz-games.github.io/main/cover/890P.jpeg" alt="Stickman Hook"></div>
             <div class="game-title">Stickman Hook</div>
         </div>
 
         <div class="game-card" onclick="openGame('https://sz-games.github.io/games/dino')">
-            <div class="game-icon dino-icon">D</div>
+            <div class="game-icon dino-icon"><img src="https://raw.githubusercontent.com/sz-games/sz-games.github.io/main/cover/dino.webp" alt="Chrome Dino"></div>
             <div class="game-title">Chrome Dino</div>
         </div>
 
         <div class="game-card" onclick="openGame('https://sz-games.github.io/Games5/jetpack-joyride/')">
-            <div class="game-icon jetpack-icon">JJ</div>
+            <div class="game-icon jetpack-icon"><img src="https://raw.githubusercontent.com/sz-games/sz-games.github.io/main/cover/jetpackjoyride.webp" alt="Jetpack Joyride"></div>
             <div class="game-title">Jetpack Joyride</div>
         </div>
 
         <div class="game-card" onclick="openGame('https://sz-games.github.io/Games11/geometry-dash-lite')">
-            <div class="game-icon gd-icon">GD</div>
+            <div class="game-icon gd-icon"><img src="https://raw.githubusercontent.com/sz-games/sz-games.github.io/main/cover/geo.jpeg" alt="Geometry Dash"></div>
             <div class="game-title">Geometry Dash</div>
         </div>
 
         <div class="game-card" onclick="openGame('https://sz-games.github.io/Games11/cat%20tennis')">
-            <div class="game-icon cat-icon">CT</div>
+            <div class="game-icon cat-icon"><img src="https://raw.githubusercontent.com/sz-games/sz-games.github.io/main/cover/cattennis.png" alt="Cat Tennis"></div>
             <div class="game-title">Cat Tennis</div>
         </div>
-        
+
+        <div class="game-card" onclick="openGame('https://sz-games.github.io/Games5/AngryBirds/')">
+            <div class="game-icon ab-icon"><img src="https://raw.githubusercontent.com/sz-games/sz-games.github.io/main/cover/0991L.webp" alt="Angry Birds"></div>
+            <div class="game-title">Angry Birds</div>
+        </div>
+
+        <div class="game-card" onclick="openGame('https://sz-games.github.io/Games9/fnaf-1/index.html')">
+            <div class="game-icon fnaf-icon"><img src="https://raw.githubusercontent.com/sz-games/sz-games.github.io/main/cover/fnaf1.jpeg" alt="Fnaf 1"></div>
+            <div class="game-title">Five Nights at Freddy's</div>
+        </div>
+
+        <div class="game-card" onclick="openGame('https://sz-games.github.io/Games4//fnaf-2/index.html')">
+            <div class="game-icon fnaf2-icon"><img src="https://raw.githubusercontent.com/sz-games/sz-games.github.io/main/cover/fnaf2.webp" alt="Fnaf 2"></div>
+            <div class="game-title">Five Nights at Freddy's 2</div>
+        </div>
+
+        <div class="game-card" onclick="openFlashGame('https://sz-games.github.io/Games11/the_binding_of_isaac.swf')">
+            <div class="game-icon fnaf-icon"><img src="https://raw.githubusercontent.com/sz-games/sz-games.github.io/main/cover/isaacb.png" alt="The Binding Of Isaac"></div>
+            <div class="game-title">The Binding Of Isaac</div>
+        </div>
+
+        <div class="game-card" onclick="openFlashGame('https://sz-games.github.io/Games11/pvz.swf')">
+            <div class="game-icon stack-icon"><img src="https://raw.githubusercontent.com/sz-games/sz-games.github.io/main/cover/pvz.png" alt="PVZ"></div>
+            <div class="game-title">PVZ</div>
+        </div>
+
+        <div class="game-card" onclick="openFlashGame('https://sz-games.github.io/Games11/ducklife1/game.swf')">
+            <div class="game-icon stack-icon"><img src="https://raw.githubusercontent.com/sz-games/sz-games.github.io/main/cover/ducklife.avif" alt="Duck Life"></div>
+            <div class="game-title">Duck Life</div>
+        </div>
+
+        <div class="game-card" onclick="openGame('https://sz-games.github.io/Games6/snakeio')">
+            <div class="game-icon ab-icon"><img src="https://raw.githubusercontent.com/sz-games/sz-games.github.io/main/cover/SNAKEIO.png" alt="Snake"></div>
+            <div class="game-title">Snake io</div>
+        </div>
+
+        <div class="game-card" onclick="openGame('https://sz-games.github.io/Games9/superhot/index.html')">
+            <div class="game-icon ab-icon"><img src="https://raw.githubusercontent.com/sz-games/sz-games.github.io/main/cover/superhot.jpeg" alt="Super Hot"></div>
+            <div class="game-title">Super Hot</div>
+        </div>
+
+        <div class="game-card" onclick="openGame('https://sz-games.github.io/Games9/uno/index.html')">
+            <div class="game-icon uno-icon"><img src="https://raw.githubusercontent.com/sz-games/sz-games.github.io/main/cover/uno.png" alt="UNO"></div>
+            <div class="game-title">Uno</div>
+        </div>
+
     </div>
 
     <div id="gameOverlay" class="game-overlay">
         <div class="game-window">
             <button class="close-btn" onclick="closeGame()">&times;</button>
-            <iframe id="gameFrame" src="" allowfullscreen></iframe>
+            <iframe id="gameFrame" src="" allowfullscreen style="display: none;"></iframe>
+            <div id="flashContainer" style="display: none;"></div>
         </div>
     </div>
 
     <script>
-        // Matrix Background Particles Logic
         const canvas = document.getElementById('particleCanvas');
         const ctx = canvas.getContext('2d');
 
@@ -379,24 +464,79 @@
         initParticles();
         animate();
 
-        // Overlay Navigation Logic
+        function filterGames() {
+            const searchInput = document.getElementById('gameSearchBar').value.toLowerCase();
+            const gameCards = document.querySelectorAll('.game-card');
+            const noResultsMsg = document.getElementById('noResultsMessage');
+            let visibleCount = 0;
+
+            gameCards.forEach(card => {
+                const titleText = card.querySelector('.game-title').textContent.toLowerCase();
+                if (titleText.includes(searchInput)) {
+                    card.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            if (visibleCount === 0) {
+                noResultsMsg.style.display = 'block';
+            } else {
+                noResultsMsg.style.display = 'none';
+            }
+        }
+
         function openGame(gameUrl) {
             const overlay = document.getElementById('gameOverlay');
             const iframe = document.getElementById('gameFrame');
+            const flashContainer = document.getElementById('flashContainer');
+            
+            flashContainer.style.display = 'none';
+            iframe.style.display = 'block';
             
             iframe.src = gameUrl; 
             overlay.style.display = 'flex';
             setTimeout(() => overlay.classList.add('active'), 10);
         }
 
+        function openFlashGame(swfUrl) {
+            const overlay = document.getElementById('gameOverlay');
+            const iframe = document.getElementById('gameFrame');
+            const flashContainer = document.getElementById('flashContainer');
+            
+            iframe.style.display = 'none';
+            flashContainer.style.display = 'block';
+            flashContainer.innerHTML = '';
+
+            overlay.style.display = 'flex';
+            setTimeout(() => overlay.classList.add('active'), 10);
+
+            if (window.RufflePlayer) {
+                const ruffle = window.RufflePlayer.newest();
+                const player = ruffle.createPlayer();
+                player.style.width = "100%";
+                player.style.height = "100%";
+                flashContainer.appendChild(player);
+                player.load({
+                    url: swfUrl,
+                    allowScriptAccess: true
+                });
+            } else {
+                flashContainer.innerHTML = "<p style='color:red; text-align:center; padding-top:20px;'>Ruffle failed to load.</p>";
+            }
+        }
+
         function closeGame() {
             const overlay = document.getElementById('gameOverlay');
             const iframe = document.getElementById('gameFrame');
+            const flashContainer = document.getElementById('flashContainer');
             
             overlay.classList.remove('active');
             setTimeout(() => {
                 overlay.style.display = 'none';
                 iframe.src = '';
+                flashContainer.innerHTML = '';
             }, 400);
         }
     </script>
